@@ -184,6 +184,10 @@ int drm_intel_gem_bo_map_unsynchronized(drm_intel_bo *bo);
 int drm_intel_gem_bo_map_gtt(drm_intel_bo *bo);
 int drm_intel_gem_bo_unmap_gtt(drm_intel_bo *bo);
 
+void *drm_intel_gem_bo_map__cpu(drm_intel_bo *bo);
+void *drm_intel_gem_bo_map__gtt(drm_intel_bo *bo);
+void *drm_intel_gem_bo_map__wc(drm_intel_bo *bo);
+
 int drm_intel_gem_bo_get_reloc_count(drm_intel_bo *bo);
 void drm_intel_gem_bo_clear_relocs(drm_intel_bo *bo, int start);
 void drm_intel_gem_bo_start_gtt_access(drm_intel_bo *bo, int write_enable);
@@ -208,6 +212,8 @@ int drm_intel_bufmgr_gem_get_devid(drm_intel_bufmgr *bufmgr);
 int drm_intel_gem_bo_wait(drm_intel_bo *bo, int64_t timeout_ns);
 
 drm_intel_context *drm_intel_gem_context_create(drm_intel_bufmgr *bufmgr);
+int drm_intel_gem_context_get_id(drm_intel_context *ctx,
+                                 uint32_t *ctx_id);
 void drm_intel_gem_context_destroy(drm_intel_context *ctx);
 int drm_intel_gem_bo_context_exec(drm_intel_bo *bo, drm_intel_context *ctx,
 				  int used, unsigned int flags);
@@ -272,6 +278,9 @@ int drm_intel_get_reset_stats(drm_intel_context *ctx,
 
 int drm_intel_get_subslice_total(int fd, unsigned int *subslice_total);
 int drm_intel_get_eu_total(int fd, unsigned int *eu_total);
+
+int drm_intel_get_pooled_eu(int fd);
+int drm_intel_get_min_eu_in_pool(int fd);
 
 /** @{ Compatibility defines to keep old code building despite the symbol rename
  * from dri_* to drm_intel_*

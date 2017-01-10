@@ -369,6 +369,13 @@ extern int drmModeAddFB2(int fd, uint32_t width, uint32_t height,
 			 uint32_t pixel_format, uint32_t bo_handles[4],
 			 uint32_t pitches[4], uint32_t offsets[4],
 			 uint32_t *buf_id, uint32_t flags);
+
+/* ...with format modifiers */
+int drmModeAddFB2WithModifiers(int fd, uint32_t width, uint32_t height,
+			       uint32_t pixel_format, uint32_t bo_handles[4],
+			       uint32_t pitches[4], uint32_t offsets[4],
+			       uint64_t modifier[4], uint32_t *buf_id, uint32_t flags);
+
 /**
  * Destroies the given framebuffer.
  */
@@ -466,6 +473,9 @@ extern int drmModeCrtcGetGamma(int fd, uint32_t crtc_id, uint32_t size,
 			       uint16_t *red, uint16_t *green, uint16_t *blue);
 extern int drmModePageFlip(int fd, uint32_t crtc_id, uint32_t fb_id,
 			   uint32_t flags, void *user_data);
+extern int drmModePageFlipTarget(int fd, uint32_t crtc_id, uint32_t fb_id,
+				 uint32_t flags, void *user_data,
+				 uint32_t target_vblank);
 
 extern drmModePlaneResPtr drmModeGetPlaneResources(int fd);
 extern drmModePlanePtr drmModeGetPlane(int fd, uint32_t plane_id);
