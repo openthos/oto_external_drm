@@ -3091,11 +3091,11 @@ static int parse_separate_sysfs_files(int maj, int min,
       "subsystem_device",
     };
     char path[PATH_MAX + 1];
-    unsigned int data[ARRAY_SIZE(attrs)];
+    unsigned int data[ARRAY_SIZE(attrs)], i;
     FILE *fp;
     int ret;
 
-    for (unsigned i = ignore_revision ? 1 : 0; i < ARRAY_SIZE(attrs); i++) {
+    for (i = ignore_revision ? 1 : 0; i < ARRAY_SIZE(attrs); i++) {
         snprintf(path, PATH_MAX, "/sys/dev/char/%d:%d/device/%s", maj, min,
                  attrs[i]);
         fp = fopen(path, "r");
