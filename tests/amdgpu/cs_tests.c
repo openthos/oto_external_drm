@@ -21,10 +21,6 @@
  *
 */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdio.h>
 
 #include "CUnit/Basic.h"
@@ -32,7 +28,7 @@
 #include "util_math.h"
 
 #include "amdgpu_test.h"
-#include "uvd_messages.h"
+#include "decode_messages.h"
 #include "amdgpu_drm.h"
 #include "amdgpu_internal.h"
 
@@ -65,6 +61,26 @@ CU_TestInfo cs_tests[] = {
 	{ "UVD destroy",  amdgpu_cs_uvd_destroy },
 	CU_TEST_INFO_NULL,
 };
+
+CU_BOOL suite_cs_tests_enable(void)
+{
+	if (amdgpu_device_initialize(drm_amdgpu[0], &major_version,
+					     &minor_version, &device_handle))
+		return CU_FALSE;
+
+	family_id = device_handle->info.family_id;
+
+	if (amdgpu_device_deinitialize(device_handle))
+		return CU_FALSE;
+
+
+	if (family_id >= AMDGPU_FAMILY_RV || family_id == AMDGPU_FAMILY_SI) {
+		printf("\n\nThe ASIC NOT support UVD, suite disabled\n");
+		return CU_FALSE;
+	}
+
+	return CU_TRUE;
+}
 
 int suite_cs_tests_init(void)
 {
@@ -253,7 +269,7 @@ static void amdgpu_cs_uvd_create(void)
 
 static void amdgpu_cs_uvd_decode(void)
 {
-	const unsigned dpb_size = 15923584, ctx_size = 5287680, dt_size = 737280;
+	const unsigned dpb_size = 15923584, dt_size = 737280;
 	uint64_t msg_addr, fb_addr, bs_addr, dpb_addr, ctx_addr, dt_addr, it_addr;
 	struct amdgpu_bo_alloc_request req = {0};
 	amdgpu_bo_handle buf_handle;
@@ -289,7 +305,8 @@ static void amdgpu_cs_uvd_decode(void)
 	r = amdgpu_bo_cpu_map(buf_handle, (void **)&ptr);
 	CU_ASSERT_EQUAL(r, 0);
 
-	memcpy(ptr, uvd_decode_msg, sizeof(uvd_create_msg));
+	memcpy(ptr, uvd_decode_msg, sizeof(uvd_decode_msg));
+	memcpy(ptr + sizeof(uvd_decode_msg), avc_decode_msg, sizeof(avc_decode_msg));
 
 	if (family_id >= AMDGPU_FAMILY_VI) {
 		ptr[0x10] = 7;
@@ -377,7 +394,7 @@ static void amdgpu_cs_uvd_decode(void)
 	/* TODO: use a real CRC32 */
 	for (i = 0, sum = 0; i < dt_size; ++i)
 		sum += ptr[i];
-	CU_ASSERT_EQUAL(sum, 0x20345d8);
+	CU_ASSERT_EQUAL(sum, SUM_DECODE);
 
 	r = amdgpu_bo_cpu_unmap(buf_handle);
 	CU_ASSERT_EQUAL(r, 0);

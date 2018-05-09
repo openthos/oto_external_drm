@@ -10,5 +10,10 @@ LOCAL_SHARED_LIBRARIES := libdrm
 
 LOCAL_SRC_FILES := $(LIBDRM_AMDGPU_FILES)
 
+LOCAL_CFLAGS := \
+	-DAMDGPU_ASIC_ID_TABLE=\"/vendor/etc/hwdata/amdgpu.ids\"
+
+LOCAL_REQUIRED_MODULES := amdgpu.ids
+
 include $(LIBDRM_COMMON_MK)
 include $(BUILD_SHARED_LIBRARY)
